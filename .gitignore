@@ -355,3 +355,5 @@ EmailSender/obj/
 EmailSender/appsettings.json
 
 .idea/.idea.LeadStatusUpdater/.idea/
+
+.idea/.idea.ConfigurationManager/.idea/
