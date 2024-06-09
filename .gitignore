@@ -357,3 +357,5 @@ EmailSender/appsettings.json
 .idea/.idea.LeadStatusUpdater/.idea/
 
 .idea/.idea.ConfigurationManager/.idea/
+
+.idea/.idea.ServiceConfigManager/.idea/
