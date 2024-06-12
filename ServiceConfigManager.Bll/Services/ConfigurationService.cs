@@ -4,6 +4,7 @@ using AutoMapper;
 using RabbitMQ.Client;
 using Serilog;
 using ServiceConfigManager.Core.DTOs;
+using ServiceConfigManager.Core.Models.Rabbit;
 using ServiceConfigManager.Core.Models.Requests;
 using ServiceConfigManager.DataLayer.Repositories;
 
@@ -36,9 +37,10 @@ public class ConfigurationService : IConfigurationService
         
         return res;
     }
-
-    public void SendConfigurationToRabbit(ServiceConfigurationDto newConfiguration)
+    
+    public void SendConfigurationToRabbit(ServiceConfigurationDto config)
     {
+        var newSettings = ProcessingToSettingsModel(config);
         var factory = new ConnectionFactory() { HostName = "localhost" };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
@@ -49,7 +51,7 @@ public class ConfigurationService : IConfigurationService
             autoDelete: false,
             arguments: null);
 
-        var message = JsonSerializer.Serialize(newConfiguration);
+        var message = JsonSerializer.Serialize(newSettings);
         var body = Encoding.UTF8.GetBytes(message);
 
         channel.BasicPublish(exchange: "",
@@ -58,5 +60,10 @@ public class ConfigurationService : IConfigurationService
             body: body);
 
         _logger.Information($"[x] Sent {message} in Rabbit");
+    }
+    
+    private SettingsModel ProcessingToSettingsModel(ServiceConfigurationDto config)
+    {
+        return _mapper.Map<SettingsModel>(config);
     }
 }
