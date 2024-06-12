@@ -36,8 +36,20 @@ public class ConfigurationService : IConfigurationService
 
         return res;
     }
+    public async Task UpdateConfigurationForService(UpdateConfigurationForServiceRequest request)
+    {
+        _logger.Information($"Сервисы: обновление конфигурации: маппим");
+        var updatedConfig = _mapper.Map<ServiceConfigurationDto>(request);
+        _logger.Information($"Сервисы: обновление конфигурации: идем в метод репозитория");
+        
+        var result = await _configurationRepository.UpdateConfigurationForService(updatedConfig);
+        _logger.Information($"Сервисы: обновление конфигурации: отправляем обновленную конфигурацию в рэббит");
+        await SendConfigurationToRabbit(updatedConfig);
 
-    private async Task SendConfigurationToRabbit(ServiceConfigurationDto config)
+        return result;
+    }
+
+        private async Task SendConfigurationToRabbit(ServiceConfigurationDto config)
     {
         var newSettings = ProcessingToSettingsModel(config);
 

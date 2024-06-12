@@ -7,5 +7,5 @@ namespace ServiceConfigManager.Bll.Services;
 public interface IConfigurationService
 {
     Task<Guid> AddConfigurationForService(AddConfigurationForServiceRequest request);
-    
+    Task UpdateConfigurationForService(UpdateConfigurationForServiceRequest request);
 }

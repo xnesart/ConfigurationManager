@@ -25,4 +25,10 @@ public class ConfigurationController:Controller
         _logger.Information($"Получили запрос на создание конфигурации");
         return Ok(await _configurationService.AddConfigurationForService(request));
     }
+    [HttpPut]
+    public async Task<ActionResult> UpdateConfigurationForService([FromBody] UpdateConfigurationForServiceRequest request)
+    {
+        _logger.Information($"Получили запрос на обновление конфигурации);
+        return Ok(await _configurationService.UpdateConfigurationForService(request));
+    }
 }
