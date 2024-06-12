@@ -12,7 +12,7 @@ using ServiceConfigManager.Core;
 namespace ServiceConfigManager.Core.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20240609143219_Initial")]
+    [Migration("20240612135136_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -37,10 +37,10 @@ namespace ServiceConfigManager.Core.Migrations
                         .HasColumnType("text")
                         .HasColumnName("key");
 
-                    b.Property<string>("Service")
+                    b.Property<string>("ServiceType")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("service");
+                        .HasColumnName("service_type");
 
                     b.Property<string>("Value")
                         .IsRequired()

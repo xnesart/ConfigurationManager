@@ -16,7 +16,7 @@ namespace ServiceConfigManager.Core.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    service = table.Column<string>(type: "text", nullable: false),
+                    service_type = table.Column<string>(type: "text", nullable: false),
                     key = table.Column<string>(type: "text", nullable: false),
                     value = table.Column<string>(type: "text", nullable: false)
                 },

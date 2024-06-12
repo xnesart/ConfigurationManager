@@ -34,10 +34,10 @@ namespace ServiceConfigManager.Core.Migrations
                         .HasColumnType("text")
                         .HasColumnName("key");
 
-                    b.Property<string>("Service")
+                    b.Property<string>("ServiceType")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("service");
+                        .HasColumnName("service_type");
 
                     b.Property<string>("Value")
                         .IsRequired()

@@ -18,5 +18,8 @@ public class DataBaseContext:DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ServiceConfigurationDto>()
+            .Property(e => e.ServiceType)
+            .HasConversion<string>();
     }
 }

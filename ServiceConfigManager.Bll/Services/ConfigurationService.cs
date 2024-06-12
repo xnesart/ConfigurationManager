@@ -1,4 +1,7 @@
+using System.Text;
+using System.Text.Json;
 using AutoMapper;
+using RabbitMQ.Client;
 using Serilog;
 using ServiceConfigManager.Core.DTOs;
 using ServiceConfigManager.Core.Models.Requests;
@@ -26,6 +29,34 @@ public class ConfigurationService : IConfigurationService
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
         _logger.Information($"Сервисы: добавление конфигурации: идем в метод репозитория");
 
-        return _configurationRepository.AddConfigurationForService(newConfig);
+        var res =_configurationRepository.AddConfigurationForService(newConfig);
+        
+        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
+        SendConfigurationToRabbit(newConfig);
+        
+        return res;
+    }
+
+    public void SendConfigurationToRabbit(ServiceConfigurationDto newConfiguration)
+    {
+        var factory = new ConnectionFactory() { HostName = "localhost" };
+        using var connection = factory.CreateConnection();
+        using var channel = connection.CreateModel();
+
+        channel.QueueDeclare(queue: "configuration_queue",
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+
+        var message = JsonSerializer.Serialize(newConfiguration);
+        var body = Encoding.UTF8.GetBytes(message);
+
+        channel.BasicPublish(exchange: "",
+            routingKey: "configuration_queue",
+            basicProperties: null,
+            body: body);
+
+        _logger.Information($"[x] Sent {message} in Rabbit");
     }
 }
