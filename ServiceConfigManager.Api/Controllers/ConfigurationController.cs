@@ -19,7 +19,7 @@ public class ConfigurationController:Controller
         _configurationService = configurationService;
     }
     
-    [HttpPost("/add")]
+    [HttpPost]
     public ActionResult<Guid> AddConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
     {
         _logger.Information($"Получили запрос на создание конфигурации");

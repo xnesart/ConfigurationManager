@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using ServiceConfigManager.Api.Extensions;
 using ServiceConfigManager.Bll;
 using ServiceConfigManager.Core.Mapping;
-
 using Serilog;
+using ServiceConfigManager.Api.Configuration;
 using ServiceConfigManager.DataLayer;
 
 namespace ServiceConfigManager.Api;
@@ -29,6 +30,11 @@ public class Program
             builder.Host.UseSerilog();
             var app = builder.Build();
 
+            
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
             //app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +47,9 @@ public class Program
             app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
+
+            app.UseMiddleware<IpBlockMiddelware>();
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();
