@@ -4,5 +4,5 @@ namespace ServiceConfigManager.DataLayer.Repositories;
 
 public interface IConfigurationRepository
 {
-    Guid AddConfigurationForService(ServiceConfigurationDto newConfiguration);
+     Task<Guid> AddConfigurationForService(ServiceConfigurationDto newConfiguration);
 }

@@ -13,12 +13,12 @@ public class ConfigurationRepository : IConfigurationRepository
         _ctx = ctx;
     }
 
-    public Guid AddConfigurationForService(ServiceConfigurationDto newConfiguration)
+    public async Task<Guid> AddConfigurationForService(ServiceConfigurationDto newConfiguration)
     {
         _logger.Information($"Сервисы: добавление конфигурации: добавляем новую конфигурацию в контекст");
 
-        _ctx.Add(newConfiguration);
-        _ctx.SaveChanges();
+        await _ctx.AddAsync(newConfiguration);
+        await _ctx.SaveChangesAsync();
         
         _logger.Information($"Возвращаем айди конфигурации {newConfiguration.Id}");
 

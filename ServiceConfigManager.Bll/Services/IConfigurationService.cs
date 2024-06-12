@@ -6,6 +6,6 @@ namespace ServiceConfigManager.Bll.Services;
 
 public interface IConfigurationService
 {
-    Guid AddConfigurationForService(AddConfigurationForServiceRequest request);
-    void SendConfigurationToRabbit(ServiceConfigurationDto config);
+    Task<Guid> AddConfigurationForService(AddConfigurationForServiceRequest request);
+    
 }

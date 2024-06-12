@@ -20,9 +20,9 @@ public class ConfigurationController:Controller
     }
     
     [HttpPost]
-    public ActionResult<Guid> AddConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
+    public async Task<ActionResult<Guid>> AddConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
     {
         _logger.Information($"Получили запрос на создание конфигурации");
-        return Ok( _configurationService.AddConfigurationForService(request));
+        return Ok(await _configurationService.AddConfigurationForService(request));
     }
 }
