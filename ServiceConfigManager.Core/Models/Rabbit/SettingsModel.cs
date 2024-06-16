@@ -1,9 +1,9 @@
 using ServiceConfigManager.Core.Enums;
 
-namespace ServiceConfigManager.Core.Models.Rabbit;
+namespace Messaging.Shared;
 
 public class SettingsModel
 {
     public ServiceType ServiceType { get; set; }
-    public Dictionary<string,string> Settigns { get; set; }
+    public Dictionary<string,string> Settings { get; set; }
 }

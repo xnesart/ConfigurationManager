@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using ServiceConfigManager.Api.Extensions;
 using ServiceConfigManager.Bll;
@@ -20,8 +21,17 @@ public class Program
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
-// Add services to the container.
 
+            builder.Services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("rabbitmq://localhost");
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+            
             builder.Services.ConfigureApiServices(builder.Configuration);
             builder.Services.ConfigureBllServices();
             builder.Services.ConfigureDalServices();
@@ -30,14 +40,12 @@ public class Program
             builder.Host.UseSerilog();
             var app = builder.Build();
 
-            
+
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-            //app.UseMiddleware<ExceptionMiddleware>();
 
-// Configure the HTTP request pipeline.
             if (!app.Environment.IsProduction())
             {
                 app.UseSwagger();
