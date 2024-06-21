@@ -11,6 +11,9 @@ namespace ServiceConfigManager.Core.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:Enum:service_type", "unknown,crm,transaction_store,rates_provider,lead_status_updater,reporting_service,email_sender");
+
             migrationBuilder.CreateTable(
                 name: "service_configuration",
                 columns: table => new

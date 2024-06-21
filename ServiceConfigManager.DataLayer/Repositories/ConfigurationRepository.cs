@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ServiceConfigManager.Core;
 using ServiceConfigManager.Core.DTOs;
+using ServiceConfigManager.Core.Enums;
 
 namespace ServiceConfigManager.DataLayer.Repositories;
 
@@ -15,25 +16,20 @@ public class ConfigurationRepository : IConfigurationRepository
         _ctx = ctx;
     }
 
-    public async Task<Guid> AddConfigurationForService(ServiceConfigurationDto newConfiguration)
+    public async Task<Dictionary<string, string>> AddConfigurationForService(ServiceConfigurationDto newConfiguration)
     {
         _logger.Information($"Сервисы: добавление конфигурации: добавляем новую конфигурацию в контекст");
-        
-        if (await CheckForExistingConfiguration(newConfiguration)) throw new InvalidOperationException("Такая конфигурация уже существует, используйте PUT endpoint");
-        
         await _ctx.AddAsync(newConfiguration);
         await _ctx.SaveChangesAsync();
 
-        _logger.Information($"Возвращаем айди конфигурации {newConfiguration.Id}");
-
-        return newConfiguration.Id;
+        var configuration = await GetConfiguration(newConfiguration.ServiceType);
+        return configuration;
     }
 
-    private async Task<bool> CheckForExistingConfiguration(ServiceConfigurationDto newConfiguration)
+    public async Task<Dictionary<string, string>> GetConfiguration(ServiceType type)
     {
-        _logger.Information($"Проверяем, существует ли в базе такая конфигурация {newConfiguration.ServiceType}");
-        var exists = await _ctx.ServiceConfiguration.AnyAsync(t => t.ServiceType == newConfiguration.ServiceType);
-        
-        return exists;
+        return await _ctx.ServiceConfiguration
+            .Where(config => config.ServiceType == type)
+            .ToDictionaryAsync(config => config.Key, config => config.Value);
     }
 }

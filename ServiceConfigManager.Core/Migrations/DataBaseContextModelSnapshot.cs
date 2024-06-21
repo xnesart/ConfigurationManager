@@ -20,6 +20,7 @@ namespace ServiceConfigManager.Core.Migrations
                 .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "service_type", new[] { "unknown", "crm", "transaction_store", "rates_provider", "lead_status_updater", "reporting_service", "email_sender" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ServiceConfigManager.Core.DTOs.ServiceConfigurationDto", b =>

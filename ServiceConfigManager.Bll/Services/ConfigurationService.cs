@@ -23,7 +23,7 @@ public class ConfigurationService : IConfigurationService
         _publishEndpoint = publishEndpoint;
     }
 
-    public async Task<Guid> AddConfigurationForService(AddConfigurationForServiceRequest request)
+    public async Task AddConfigurationForService(AddConfigurationForServiceRequest request)
     {
         _logger.Information($"Сервисы: добавление конфигурации: маппим");
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
@@ -32,52 +32,22 @@ public class ConfigurationService : IConfigurationService
         var res = await _configurationRepository.AddConfigurationForService(newConfig);
 
         _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
-        await SendConfigurationToRabbit(newConfig);
-
-        return res;
+        await SendConfigurationToRabbit(res);
+        
     }
-
-    // private async Task SendConfigurationToRabbit(ServiceConfigurationDto config)
-    // {
-    //     var newSettings = ProcessingToSettingsModel(config);
-    //
-    //     var factory = new ConnectionFactory() { HostName = "localhost" };
-    //     using var connection = factory.CreateConnection();
-    //     using var channel = connection.CreateModel();
-    //
-    //     channel.QueueDeclare(queue: "configuration_queue",
-    //         durable: false,
-    //         exclusive: false,
-    //         autoDelete: false,
-    //         arguments: null);
-    //
-    //     var message = JsonSerializer.Serialize(newSettings);
-    //     var body = Encoding.UTF8.GetBytes(message);
-    //
-    //     await Task.Run(() =>
-    //     {
-    //         channel.BasicPublish(exchange: "",
-    //             routingKey: "configuration_queue",
-    //             basicProperties: null,
-    //             body: body);
-    //
-    //         _logger.Information($"{message} отправлен в RabbitMq");
-    //     });
-    // } 
-    private async Task SendConfigurationToRabbit(ServiceConfigurationDto config)
+    
+    private async Task SendConfigurationToRabbit(Dictionary<string,string> config)
     {
-        var newSettings = ProcessingToSettingsModel(config);
+        _logger.Information($"Сервисы: отправление конфигурации в RabbitMQ: маппим");
+
+        var message = new ConfigurationMessage
+        {
+            Configurations = config
+        };
 
         // Отправка сообщения через MassTransit
-        await _publishEndpoint.Publish(newSettings);
+        await _publishEndpoint.Publish(message);
 
-        _logger.Information($"Сервисы: добавление конфигурации: {newSettings} отправлено в RabbitMQ");
-    }
-
-    private SettingsModel ProcessingToSettingsModel(ServiceConfigurationDto config)
-    {
-        _logger.Information($"Сервисы: отправление конфигурации в рэббит: маппим");
-
-        return _mapper.Map<SettingsModel>(config);
+        _logger.Information($"Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ");
     }
 }

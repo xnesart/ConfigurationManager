@@ -4,5 +4,5 @@ namespace ServiceConfigManager.Bll.Services;
 
 public interface IConfigurationService
 {
-    Task<Guid> AddConfigurationForService(AddConfigurationForServiceRequest request);
+    Task AddConfigurationForService(AddConfigurationForServiceRequest request);
 }

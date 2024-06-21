@@ -31,7 +31,7 @@ public class Program
                     cfg.ConfigureEndpoints(context);
                 });
             });
-            
+
             builder.Services.ConfigureApiServices(builder.Configuration);
             builder.Services.ConfigureBllServices();
             builder.Services.ConfigureDalServices();
@@ -46,11 +46,8 @@ public class Program
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            if (!app.Environment.IsProduction())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 
@@ -65,6 +62,7 @@ public class Program
             app.MapControllers();
 
             Log.Information("Running app");
+            
             app.Run();
         }
 

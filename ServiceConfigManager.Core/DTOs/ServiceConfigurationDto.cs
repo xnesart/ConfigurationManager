@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using ServiceConfigManager.Core.Enums;
 
 namespace ServiceConfigManager.Core.DTOs;
