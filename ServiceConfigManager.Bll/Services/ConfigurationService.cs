@@ -3,6 +3,7 @@ using MassTransit;
 using Messaging.Shared;
 using Serilog;
 using ServiceConfigManager.Core.DTOs;
+using ServiceConfigManager.Core.Enums;
 using ServiceConfigManager.Core.Models.Requests;
 using ServiceConfigManager.DataLayer.Repositories;
 
@@ -33,13 +34,32 @@ public class ConfigurationService : IConfigurationService
 
         _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
         await SendConfigurationToRabbit(res);
+    } 
+    
+    public async Task<Dictionary<string, string>>  GetConfigurationForService(ServiceType service)
+    {
+        _logger.Information($"Сервисы: добавление конфигурации: идем в метод репозитория");
+
+        var res = await _configurationRepository.GetConfigurationForService(service);
+
+        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
+        await SendConfigurationToRabbit(res);
         
+        return res;
     }
+    
+    
     
     private async Task SendConfigurationToRabbit(Dictionary<string,string> config)
     {
-        _logger.Information($"Сервисы: отправление конфигурации в RabbitMQ: маппим");
+        if (config == null || !config.Any())
+        {
+            _logger.Information("Сервисы: отправление конфигурации в RabbitMQ: конфигурация пуста, отправка отменена");
+            return;
+        }
 
+        _logger.Information("Сервисы: отправление конфигурации в RabbitMQ: маппим");
+  
         var message = new ConfigurationMessage
         {
             Configurations = config
@@ -48,6 +68,6 @@ public class ConfigurationService : IConfigurationService
         // Отправка сообщения через MassTransit
         await _publishEndpoint.Publish(message);
 
-        _logger.Information($"Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ");
+        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ");
     }
 }

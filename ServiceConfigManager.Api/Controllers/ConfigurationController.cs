@@ -3,6 +3,7 @@ using ServiceConfigManager.Core.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 using Serilog;
+using ServiceConfigManager.Core.Enums;
 using ILogger = Serilog.ILogger;
 
 namespace ServiceConfigManager.Api.Controllers;
@@ -26,5 +27,14 @@ public class ConfigurationController:Controller
         await _configurationService.AddConfigurationForService(request);
         
         return Ok();
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<Dictionary<string,string>>> ConfigurationForService(ServiceType service)
+    {
+        _logger.Information($"Получили запрос на получение конфигурации");
+        var res = await _configurationService.GetConfigurationForService(service);
+        
+        return Ok(res);
     }
 }

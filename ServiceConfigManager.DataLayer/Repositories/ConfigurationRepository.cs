@@ -26,6 +26,15 @@ public class ConfigurationRepository : IConfigurationRepository
         return configuration;
     }
 
+    public async Task<Dictionary<string, string>> GetConfigurationForService(ServiceType service)
+    {
+        var configurations = _ctx.ServiceConfiguration.Where(c => c.ServiceType == service)
+            .ToList();
+        var configurationDictionary = configurations.ToDictionary(c => c.Key, c => c.Value);
+
+        return configurationDictionary;
+    }
+
     public async Task<Dictionary<string, string>> GetConfiguration(ServiceType type)
     {
         return await _ctx.ServiceConfiguration
