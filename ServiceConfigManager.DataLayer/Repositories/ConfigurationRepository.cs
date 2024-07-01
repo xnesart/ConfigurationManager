@@ -3,6 +3,7 @@ using Serilog;
 using ServiceConfigManager.Core;
 using ServiceConfigManager.Core.DTOs;
 using ServiceConfigManager.Core.Enums;
+using ServiceConfigManager.Core.Exceptions;
 
 namespace ServiceConfigManager.DataLayer.Repositories;
 
@@ -24,6 +25,33 @@ public class ConfigurationRepository : IConfigurationRepository
 
         var configuration = await GetConfiguration(newConfiguration.ServiceType);
         return configuration;
+    }
+
+    public async Task<Dictionary<string, string>> UpdateConfigurationForService(
+        ServiceConfigurationDto newConfiguration)
+    {
+        var existingConfig = await _ctx.ServiceConfiguration
+            .FirstOrDefaultAsync(c => c.ServiceType == newConfiguration.ServiceType &&
+                                      c.Key == newConfiguration.Key);
+
+        if (existingConfig == null)
+        {
+            _logger.Error("configuration not found, exception");
+            throw new NotFoundException("конфигурация не найдена");
+        }
+        
+        _logger.Information("added config to context");
+        _ctx.ServiceConfiguration.Add(newConfiguration);
+
+        await _ctx.SaveChangesAsync();
+
+        var updatedConfigurations = await _ctx.ServiceConfiguration
+            .Where(c => c.ServiceType == newConfiguration.ServiceType)
+            .ToListAsync();
+
+        var configDictionary = updatedConfigurations.ToDictionary(c => c.Key, c => c.Value);
+
+        return configDictionary;
     }
 
     public async Task<Dictionary<string, string>> GetConfigurationForService(ServiceType service)

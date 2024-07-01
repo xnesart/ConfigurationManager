@@ -36,7 +36,7 @@ public class ConfigurationService : IConfigurationService
         await SendConfigurationToRabbit(res);
     } 
     
-    public async Task<Dictionary<string, string>>  GetConfigurationForService(ServiceType service)
+    public async Task<Dictionary<string, string>> GetConfigurationForService(ServiceType service)
     {
         _logger.Information($"Сервисы: добавление конфигурации: идем в метод репозитория");
 
@@ -46,6 +46,18 @@ public class ConfigurationService : IConfigurationService
         await SendConfigurationToRabbit(res);
         
         return res;
+    } 
+    
+    public async Task UpdateConfigurationForService(AddConfigurationForServiceRequest request)
+    {
+        _logger.Information($"Сервисы: добавление конфигурации: маппим");
+        var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
+        _logger.Information($"Сервисы: изменение конфигурации: идем в метод репозитория");
+
+        var res = await _configurationRepository.UpdateConfigurationForService(newConfig);
+
+        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
+        await SendConfigurationToRabbit(res);
     }
     
     

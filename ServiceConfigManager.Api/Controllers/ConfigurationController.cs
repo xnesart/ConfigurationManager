@@ -29,6 +29,15 @@ public class ConfigurationController:Controller
         return Ok();
     }
     
+    [HttpPatch]
+    public async Task<ActionResult> ConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
+    {
+        _logger.Information($"Получили запрос на изменение конфигурации");
+        await _configurationService.UpdateConfigurationForService(request);
+        
+        return Ok();
+    }
+    
     [HttpGet]
     public async Task<ActionResult<Dictionary<string,string>>> ConfigurationForService(ServiceType service)
     {
