@@ -50,13 +50,13 @@ public class ConfigurationService : IConfigurationService
     
     public async Task UpdateConfigurationForService(AddConfigurationForServiceRequest request)
     {
-        _logger.Information($"Сервисы: добавление конфигурации: маппим");
+        _logger.Information($"Сервисы: изменение конфигурации: маппим");
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
         _logger.Information($"Сервисы: изменение конфигурации: идем в метод репозитория");
 
         var res = await _configurationRepository.UpdateConfigurationForService(newConfig);
 
-        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
+        _logger.Information($"Сервисы: изменение конфигурации: отправляем новую конфигурацию в рэббит");
         await SendConfigurationToRabbit(res);
     }
     

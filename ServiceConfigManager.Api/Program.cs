@@ -1,10 +1,11 @@
 using MassTransit;
+using Messaging.Shared;
 using Microsoft.AspNetCore.HttpOverrides;
+using Serilog;
+using ServiceConfigManager.Api.Configuration;
 using ServiceConfigManager.Api.Extensions;
 using ServiceConfigManager.Bll;
 using ServiceConfigManager.Core.Mapping;
-using Serilog;
-using ServiceConfigManager.Api.Configuration;
 using ServiceConfigManager.DataLayer;
 
 namespace ServiceConfigManager.Api;
@@ -28,7 +29,9 @@ public class Program
                 {
                     cfg.Host("rabbitmq://localhost");
 
-                    cfg.ConfigureEndpoints(context);
+                    cfg.Message<ConfigurationMessage>(m => { m.SetEntityName("configurations-exchange"); });
+
+                    cfg.Publish<ConfigurationMessage>(p => { p.ExchangeType = "fanout"; });
                 });
             });
 
@@ -62,7 +65,7 @@ public class Program
             app.MapControllers();
 
             Log.Information("Running app");
-            
+
             app.Run();
         }
 
