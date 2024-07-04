@@ -62,7 +62,7 @@ public class ConfigurationService : IConfigurationService
     
     
     
-    private async Task SendConfigurationToRabbit(Dictionary<string,string> config)
+    private async Task SendConfigurationToRabbit(Dictionary<string, string> config)
     {
         if (config == null || !config.Any())
         {
@@ -70,8 +70,8 @@ public class ConfigurationService : IConfigurationService
             return;
         }
 
-        _logger.Information("Сервисы: отправление конфигурации в RabbitMQ: маппим");
-  
+        _logger.Information("Сервисы: отправление конфигурации в RabbitMQ: маппим. Количество ключей: {KeyCount}, Ключи: {Keys}", config.Count, string.Join(", ", config.Keys));
+
         var message = new ConfigurationMessage
         {
             Configurations = config
@@ -80,6 +80,7 @@ public class ConfigurationService : IConfigurationService
         // Отправка сообщения через MassTransit
         await _publishEndpoint.Publish(message);
 
-        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ");
+        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ. Конфигурация: {Configuration}", Newtonsoft.Json.JsonConvert.SerializeObject(config));
     }
+
 }
