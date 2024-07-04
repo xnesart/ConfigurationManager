@@ -41,7 +41,7 @@ public class ConfigurationRepository : IConfigurationRepository
         }
         
         _logger.Information("added config to context");
-        _ctx.Remove(existingConfig);
+        _ctx.ServiceConfiguration.Remove(existingConfig);
         _ctx.ServiceConfiguration.Add(newConfiguration);
 
         await _ctx.SaveChangesAsync();
