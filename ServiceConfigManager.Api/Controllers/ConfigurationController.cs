@@ -23,7 +23,7 @@ public class ConfigurationController:Controller
     [HttpPost]
     public async Task<ActionResult> AddConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
     {
-        _logger.Information($"Получили запрос на создание конфигурации");
+        _logger.Information($"Получили запрос на создание конфигурации {request.ServiceType}, {request.Key}, {request.Value}");
         await _configurationService.AddConfigurationForService(request);
         
         return Ok();
@@ -32,7 +32,7 @@ public class ConfigurationController:Controller
     [HttpPatch]
     public async Task<ActionResult> ConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
     {
-        _logger.Information($"Получили запрос на изменение конфигурации");
+        _logger.Information($"Получили запрос на изменение конфигурации  {request.ServiceType}, {request.Key}, {request.Value}");
         await _configurationService.UpdateConfigurationForService(request);
         
         return Ok();
@@ -41,7 +41,7 @@ public class ConfigurationController:Controller
     [HttpGet]
     public async Task<ActionResult<Dictionary<string,string>>> ConfigurationForService(ServiceType service)
     {
-        _logger.Information($"Получили запрос на получение конфигурации");
+        _logger.Information($"Получили запрос на получение конфигурации {service}");
         var res = await _configurationService.GetConfigurationForService(service);
         
         return Ok(res);
