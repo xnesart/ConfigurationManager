@@ -80,7 +80,7 @@ public class ConfigurationService : IConfigurationService
         // Отправка сообщения через MassTransit
         await _publishEndpoint.Publish(message);
 
-        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ. Конфигурация: {Configuration}", Newtonsoft.Json.JsonConvert.SerializeObject(config));
+        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ. Конфигурация: {Configuration}");
     }
 
 }
