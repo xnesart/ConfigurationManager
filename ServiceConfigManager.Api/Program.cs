@@ -14,14 +14,19 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Настройка Serilog перед настройкой провайдеров логирования
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .CreateLogger();
+
         try
         {
-            var builder = WebApplication.CreateBuilder(args);
-            builder.Logging.ClearProviders();
+            builder.Host.UseSerilog();
 
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(builder.Configuration)
-                .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog();
 
             builder.Services.AddMassTransit(x =>
             {
@@ -40,9 +45,7 @@ public class Program
             builder.Services.ConfigureDalServices();
             builder.Services.AddAutoMapper(typeof(RequestMapperProfile), typeof(ResponseMapperProfile));
 
-            builder.Host.UseSerilog();
             var app = builder.Build();
-
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -68,10 +71,9 @@ public class Program
 
             app.Run();
         }
-
         catch (Exception ex)
         {
-            Log.Fatal(ex.Message);
+            Log.Fatal(ex, "Host terminated unexpectedly");
         }
         finally
         {
