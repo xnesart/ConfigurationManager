@@ -26,24 +26,28 @@ public class ConfigurationService : IConfigurationService
 
     public async Task AddConfigurationForService(AddConfigurationForServiceRequest request)
     {
-        _logger.Information($"Сервисы: добавление конфигурации: маппим");
+        _logger.Information("Сервисы: добавление конфигурации: маппим");
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
-        _logger.Information($"Сервисы: добавление конфигурации: идем в метод репозитория");
 
+        _logger.Information("Сервисы: добавление конфигурации: идем в метод репозитория");
         var res = await _configurationRepository.AddConfigurationForService(newConfig);
 
-        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
+        _logger.Information("Сервисы: добавление конфигурации: отправляем новую конфигурацию в RabbitMQ");
+
+        // Перебор словаря для логирования
+        foreach (var kvp in res)
+        {
+            _logger.Information("Конфигурация: Ключ: {Key}, Значение: {Value}", kvp.Key, kvp.Value);
+        }
+
         await SendConfigurationToRabbit(res);
-    } 
+    }
     
     public async Task<Dictionary<string, string>> GetConfigurationForService(ServiceType service)
     {
         _logger.Information($"Сервисы: добавление конфигурации: идем в метод репозитория");
 
         var res = await _configurationRepository.GetConfigurationForService(service);
-
-        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в рэббит");
-        await SendConfigurationToRabbit(res);
         
         return res;
     } 
@@ -60,8 +64,6 @@ public class ConfigurationService : IConfigurationService
         await SendConfigurationToRabbit(res);
     }
     
-    
-    
     private async Task SendConfigurationToRabbit(Dictionary<string, string> config)
     {
         if (config == null || !config.Any())
@@ -77,10 +79,16 @@ public class ConfigurationService : IConfigurationService
             Configurations = config
         };
 
+        // Перебор словаря для логирования
+        foreach (var kvp in config)
+        {
+            _logger.Information("Конфигурация: Ключ: {Key}, Значение: {Value}", kvp.Key, kvp.Value);
+        }
+
         // Отправка сообщения через MassTransit
         await _publishEndpoint.Publish(message);
 
-        _logger.Information("Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ. Конфигурация: {Configuration}");
+        _logger.Information($"Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ{message.Configurations}");
     }
 
 }
