@@ -15,8 +15,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Настройка Serilog перед настройкой провайдеров логирования
+        
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
@@ -34,9 +33,23 @@ public class Program
                 {
                     cfg.Host("rabbitmq://localhost");
 
-                    cfg.Message<ConfigurationMessage>(m => { m.SetEntityName("configurations-exchange"); });
+                    cfg.Message<ConfigurationMessage>(m => 
+                    { 
+                        m.SetEntityName("configurations-exchange");
+                    });
 
-                    cfg.Publish<ConfigurationMessage>(p => { p.ExchangeType = "fanout"; });
+                    cfg.Publish<ConfigurationMessage>(p => 
+                    { 
+                        p.ExchangeType = "fanout";
+                        p.Durable = true;
+                    });
+
+                    cfg.ReceiveEndpoint("configurations-queue", e =>
+                    {
+                        // Настройка TTL и сохранения сообщений
+                        e.SetQueueArgument("x-message-ttl", 10 * 60 * 1000); // 10 минут в миллисекундах
+                        //e.SetQueueArgument("x-dead-letter-exchange", "dead-letter-exchange");
+                    });
                 });
             });
 
