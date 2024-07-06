@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.Bll", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.DataLayer", "ServiceConfigManager.DataLayer\ServiceConfigManager.DataLayer.csproj", "{91011E46-9ED7-4793-8C1C-F95EC4D6BDDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.Api.Tests", "ServiceConfigManager.Api.Tests\ServiceConfigManager.Api.Tests.csproj", "{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{91011E46-9ED7-4793-8C1C-F95EC4D6BDDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91011E46-9ED7-4793-8C1C-F95EC4D6BDDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91011E46-9ED7-4793-8C1C-F95EC4D6BDDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
