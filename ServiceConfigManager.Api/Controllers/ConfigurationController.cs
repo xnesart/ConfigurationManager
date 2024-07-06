@@ -32,11 +32,18 @@ public class ConfigurationController:Controller
     [HttpPatch]
     public async Task<ActionResult> ConfigurationForService([FromBody]AddConfigurationForServiceRequest request)
     {
-        _logger.Information($"Получили запрос на изменение конфигурации  {request.ServiceType}, {request.Key}, {request.Value}");
+        if (request.ServiceType == null || request.Value == null || request.Key == null)
+        {
+            _logger.Error("Received a request with invalid data. Check request fields.");
+            return BadRequest("Invalid request data. ServiceType, Key, and Value cannot be null.");
+        }
+
+        _logger.Information($"Received a request to update configuration {request.ServiceType}, {request.Key}, {request.Value}");
         await _configurationService.UpdateConfigurationForService(request);
-        
+
         return Ok();
     }
+
     
     [HttpGet]
     public async Task<ActionResult<Dictionary<string,string>>> ConfigurationForService(ServiceType service)

@@ -27,6 +27,13 @@ public class ConfigurationService : IConfigurationService
 
     public async Task AddConfigurationForService(AddConfigurationForServiceRequest request)
     {
+        if (request == null)
+        {
+            _logger.Error($"Сервисы: изменение конфигурации: реквест null");
+
+            throw new ArgumentNullException("request is null");
+        }
+        
         _logger.Information("Сервисы: добавление конфигурации: маппим");
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
 
@@ -55,6 +62,13 @@ public class ConfigurationService : IConfigurationService
 
     public async Task UpdateConfigurationForService(AddConfigurationForServiceRequest request)
     {
+        if (request == null)
+        {
+            _logger.Error($"Сервисы: изменение конфигурации: реквест null");
+
+            throw new ArgumentNullException("request is null");
+        }
+        
         _logger.Information(
             $"Сервисы: изменение конфигурации: маппим{request.ServiceType}, {request.Value}, {request.Key}");
         var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
