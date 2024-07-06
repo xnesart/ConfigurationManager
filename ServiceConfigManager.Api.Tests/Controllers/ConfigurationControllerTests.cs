@@ -46,7 +46,7 @@ public class ConfigurationControllerTests
     public async Task ConfigurationForServicePatсh_CorrectRequestSent_AllOkReturned(ServiceType serviceType, string key,
         string value)
     {
-        //assert
+        //arrange
         var request = new AddConfigurationForServiceRequest()
         {
             ServiceType = serviceType,
@@ -60,7 +60,7 @@ public class ConfigurationControllerTests
         //act
         var actual = await _sut.ConfigurationForService(request);
 
-        //arrange
+        //assert
         _configurationService.Verify(service => service.UpdateConfigurationForService(request), Times.Once);
         var actionResult = Assert.IsType<OkResult>(actual);
         Assert.Equal(200, actionResult.StatusCode);
@@ -69,7 +69,7 @@ public class ConfigurationControllerTests
     [Fact]
     public async Task ConfigurationForServiceGet_CorrectRequestSent_DictionaryReturned()
     {
-        //assert
+        //arrange
         var request = ServiceType.crm;
         var expected = new Dictionary<string, string>()
         {
@@ -82,7 +82,7 @@ public class ConfigurationControllerTests
         //act
         var actual = await _sut.ConfigurationForService(request);
 
-        //arrange
+        //assert
         _configurationService.Verify(service => service.GetConfigurationForService(request), Times.Once);
         var actionResult = Assert.IsType<ActionResult<Dictionary<string, string>>>(actual);
         Assert.IsType<OkObjectResult>(actionResult.Result);

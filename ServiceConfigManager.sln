@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.DataLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.Api.Tests", "ServiceConfigManager.Api.Tests\ServiceConfigManager.Api.Tests.csproj", "{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceConfigManager.Bll.Tests", "ServiceConfigManager.Bll.Tests\ServiceConfigManager.Bll.Tests.csproj", "{71FF38C4-397D-424B-B001-928671FC39EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23CE2BD7-0CC6-469F-B539-28A19F4E39DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71FF38C4-397D-424B-B001-928671FC39EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71FF38C4-397D-424B-B001-928671FC39EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71FF38C4-397D-424B-B001-928671FC39EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71FF38C4-397D-424B-B001-928671FC39EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
