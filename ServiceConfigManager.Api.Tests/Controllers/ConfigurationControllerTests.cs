@@ -107,7 +107,7 @@ public class ConfigurationControllerTests
 
     [Theory]
     [InlineData(ServiceType.crm, "connectionString", "someString")]
-    public async Task ConfigurationForServicePatсh_CorrectRequestSent_AllOkReturned(ServiceType serviceType, string key,
+    public async Task PatchConfigurationForService_CorrectRequestSent_AllOkReturned(ServiceType serviceType, string key,
         string value)
     {
         //arrange
@@ -129,9 +129,55 @@ public class ConfigurationControllerTests
         var actionResult = Assert.IsType<OkResult>(actual);
         Assert.Equal(200, actionResult.StatusCode);
     }
+    
+    [Theory]
+    [InlineData(ServiceType.crm, "connectionString", "someString")]
+    public async Task PatchConfigurationForService_ServiceNotFound_ThrowsNotFoundException(ServiceType serviceType, string key, string value)
+    {
+        // Arrange
+        var request = new AddConfigurationForServiceRequest
+        {
+            ServiceType = serviceType,
+            Key = key,
+            Value = value
+        };
+
+        _configurationService.Setup(service => service.UpdateConfigurationForService(request))
+            .ThrowsAsync(new NotFoundException("Configuration not found"));
+
+        // Act
+        Func<Task> act = () => _sut.ConfigurationForService(request);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<NotFoundException>(act);
+        Assert.Equal("Configuration not found", exception.Message);
+    }
+    
+    [Theory]
+    [InlineData(ServiceType.crm, "connectionString", "someString")]
+    public async Task PatchConfigurationForService_UnexpectedError_ThrowsException(ServiceType serviceType, string key, string value)
+    {
+        // Arrange
+        var request = new AddConfigurationForServiceRequest
+        {
+            ServiceType = serviceType,
+            Key = key,
+            Value = value
+        };
+
+        _configurationService.Setup(service => service.UpdateConfigurationForService(request))
+            .ThrowsAsync(new Exception("Unexpected error"));
+
+        // Act
+        Func<Task> act = () => _sut.ConfigurationForService(request);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<Exception>(act);
+        Assert.Equal("Unexpected error", exception.Message);
+    }
 
     [Fact]
-    public async Task ConfigurationForServiceGet_CorrectRequestSent_DictionaryReturned()
+    public async Task GetConfigurationForService_CorrectRequestSent_DictionaryReturned()
     {
         //arrange
         var request = ServiceType.crm;
@@ -153,5 +199,38 @@ public class ConfigurationControllerTests
         var okObjectResult = actionResult.Result as OkObjectResult;
         Assert.Equal(200, okObjectResult.StatusCode);
         Assert.Equal(expected, okObjectResult.Value);
+    }
+    
+    [Fact]
+    public async Task GetConfigurationForService_ServiceNotFound_ThrowsNotFoundException()
+    {
+        // Arrange
+        var request = ServiceType.crm;
+        _configurationService.Setup(service => service.GetConfigurationForService(request))
+            .ThrowsAsync(new NotFoundException("Configuration not found"));
+
+        // Act
+        Func<Task> act = () => _sut.ConfigurationForService(request);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<NotFoundException>(act);
+        Assert.Equal("Configuration not found", exception.Message);
+    }
+
+    
+    [Fact]
+    public async Task GetConfigurationForService_UnexpectedError_ReturnsInternalServerError()
+    {
+        // Arrange
+        var request = ServiceType.crm;
+        _configurationService.Setup(service => service.GetConfigurationForService(request))
+            .ThrowsAsync(new Exception("Unexpected error"));
+
+        // Act
+        Func<Task> act = () => _sut.ConfigurationForService(request);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<Exception>(act);
+        Assert.Equal("Unexpected error", exception.Message);
     }
 }
