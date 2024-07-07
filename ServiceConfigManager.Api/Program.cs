@@ -51,7 +51,6 @@ public class Program
                         e.Exclusive = true;
                         // Настройка TTL и сохранения сообщений
                         e.SetQueueArgument("x-message-ttl", 10 * 60 * 1000); // 10 минут в миллисекундах
-                        //e.SetQueueArgument("x-dead-letter-exchange", "dead-letter-exchange");
                     });
                 });
             });
