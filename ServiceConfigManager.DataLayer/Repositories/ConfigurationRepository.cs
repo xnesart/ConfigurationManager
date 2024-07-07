@@ -36,15 +36,15 @@ public class ConfigurationRepository : IConfigurationRepository
 
         if (existingConfig == null)
         {
-            _logger.Error("configuration not found, exception");
-            throw new NotFoundException("конфигурация не найдена");
+            _logger.Error("Configuration not found, throwing NotFoundException");
+            throw new NotFoundException("Configuration not found");
         }
-        
-        _logger.Information("added config to context");
+
+        _logger.Information("Updating configuration in context");
         _ctx.ServiceConfiguration.Remove(existingConfig);
         _ctx.ServiceConfiguration.Add(newConfiguration);
 
-        await _ctx.SaveChangesAsync();
+        await _ctx.SaveChangesAsync(); // Сохранение изменений в базе данных
 
         var updatedConfigurations = await _ctx.ServiceConfiguration
             .Where(c => c.ServiceType == newConfiguration.ServiceType)
