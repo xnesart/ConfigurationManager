@@ -1,5 +1,3 @@
-using MassTransit;
-using Messaging.Shared;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 using ServiceConfigManager.Api.Configuration;
@@ -15,7 +13,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
@@ -27,33 +25,7 @@ public class Program
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog();
 
-            builder.Services.AddMassTransit(x =>
-            {
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host("rabbitmq://localhost");
-
-                    cfg.Message<ConfigurationMessage>(m => 
-                    { 
-                        m.SetEntityName("configurations-exchange");
-                    });
-
-                    cfg.Publish<ConfigurationMessage>(p => 
-                    { 
-                        p.ExchangeType = "fanout";
-                        p.Durable = true;
-                    });
-
-                    cfg.ReceiveEndpoint("configurations-queue", e =>
-                    {
-                        e.Durable = true;
-                        e.AutoDelete = true;
-                        e.Exclusive = true;
-                        // Настройка TTL и сохранения сообщений
-                        e.SetQueueArgument("x-message-ttl", 10 * 60 * 1000); // 10 минут в миллисекундах
-                    });
-                });
-            });
+            builder.Services.ConfigureMassTransit(builder.Configuration);
 
             builder.Services.ConfigureApiServices(builder.Configuration);
             builder.Services.ConfigureBllServices();
