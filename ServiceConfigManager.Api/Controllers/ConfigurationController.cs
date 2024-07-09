@@ -37,6 +37,14 @@ public class ConfigurationController:Controller
         
         return Ok();
     }
+
+    [HttpDelete]
+    public async Task DeleteConfigurationForService([FromBody] AddConfigurationForServiceRequest request)
+    {
+        _logger.Information($"Получили запрос на удаление конфигурации  {request.ServiceType}, {request.Key}, {request.Value}");
+        
+        await _configurationService.DeleteConfigurationForService(request);
+    }
     
     [HttpGet]
     public async Task<ActionResult<Dictionary<string,string>>> ConfigurationForService(ServiceType service)

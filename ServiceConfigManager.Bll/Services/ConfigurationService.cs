@@ -33,14 +33,15 @@ public class ConfigurationService : IConfigurationService
         _logger.Information("Сервисы: добавление конфигурации: идем в метод репозитория");
         var res = await _configurationRepository.AddConfigurationForService(newConfig);
 
-        _logger.Information($"Сервисы: добавление конфигурации: отправляем новую конфигурацию в RabbitMQ для сервиса {request.ServiceType}");
+        _logger.Information(
+            $"Сервисы: добавление конфигурации: отправляем новую конфигурацию в RabbitMQ для сервиса {request.ServiceType}");
 
         var message = new ConfigurationMessage()
         {
             Configurations = res,
             ServiceType = request.ServiceType
         };
-        
+
         await SendConfigurationToRabbit(message);
     }
 
@@ -72,6 +73,25 @@ public class ConfigurationService : IConfigurationService
         await SendConfigurationToRabbit(message);
     }
 
+    public async Task DeleteConfigurationForService(AddConfigurationForServiceRequest request)
+    {
+        _logger.Information(
+            $"Сервисы: удаление конфигурации: маппим{request.ServiceType}, {request.Value}, {request.Key}");
+        var newConfig = _mapper.Map<ServiceConfigurationDto>(request);
+        _logger.Information($"Сервисы: удаление конфигурации: идем в метод репозитория");
+
+        var res = await _configurationRepository.DeleteConfigurationForService(newConfig);
+
+        var message = new ConfigurationMessage()
+        {
+            Configurations = res,
+            ServiceType = request.ServiceType
+        };
+
+        _logger.Information($"Сервисы: изменение конфигурации: отправляем новую конфигурацию в рэббит");
+        if (message.Configurations.Count > 0) await SendConfigurationToRabbit(message);
+    }
+
     private async Task SendConfigurationToRabbit(ConfigurationMessage configurationMessage)
     {
         if (configurationMessage == null)
@@ -83,9 +103,10 @@ public class ConfigurationService : IConfigurationService
         _logger.Information(
             "Сервисы: отправление конфигурации в RabbitMQ: маппим. Количество ключей: {KeyCount}, Ключи: {Keys}",
             configurationMessage.Configurations.Count, string.Join(", ", configurationMessage.Configurations.Keys));
-        
+
         await _publishEndpoint.Publish(configurationMessage);
 
-        _logger.Information($"Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ{configurationMessage.Configurations} для сервиса {configurationMessage.ServiceType}");
+        _logger.Information(
+            $"Сервисы: добавление конфигурации: конфигурация отправлена в RabbitMQ{configurationMessage.Configurations} для сервиса {configurationMessage.ServiceType}");
     }
 }

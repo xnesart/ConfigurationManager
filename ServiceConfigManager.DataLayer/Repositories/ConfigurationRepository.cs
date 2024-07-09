@@ -23,7 +23,7 @@ public class ConfigurationRepository : IConfigurationRepository
         await _ctx.AddAsync(newConfiguration);
         await _ctx.SaveChangesAsync();
 
-        var configuration = await GetConfiguration(newConfiguration.ServiceType);
+        var configuration = await GetConfigurationForService(newConfiguration.ServiceType);
         return configuration;
     }
 
@@ -39,7 +39,7 @@ public class ConfigurationRepository : IConfigurationRepository
             _logger.Error("configuration not found, exception");
             throw new NotFoundException("конфигурация не найдена");
         }
-        
+
         _logger.Information("added config to context");
         _ctx.ServiceConfiguration.Remove(existingConfig);
         _ctx.ServiceConfiguration.Add(newConfiguration);
@@ -54,7 +54,7 @@ public class ConfigurationRepository : IConfigurationRepository
 
         return configDictionary;
     }
-
+    
     public async Task<Dictionary<string, string>> GetConfigurationForService(ServiceType service)
     {
         var configurations = _ctx.ServiceConfiguration.Where(c => c.ServiceType == service)
@@ -64,10 +64,21 @@ public class ConfigurationRepository : IConfigurationRepository
         return configurationDictionary;
     }
 
-    public async Task<Dictionary<string, string>> GetConfiguration(ServiceType type)
+    public async Task<Dictionary<string, string>> DeleteConfigurationForService(
+        ServiceConfigurationDto configurationForDelete)
     {
-        return await _ctx.ServiceConfiguration
-            .Where(config => config.ServiceType == type)
-            .ToDictionaryAsync(config => config.Key, config => config.Value);
+        var serviceType = configurationForDelete.ServiceType;
+
+        var configuration = await _ctx.ServiceConfiguration.Where(c =>
+            c.ServiceType == configurationForDelete.ServiceType && c.Key == configurationForDelete.Key &&
+            c.Value == configurationForDelete.Value).FirstOrDefaultAsync();
+
+        if (configuration != null)
+        {
+            _ctx.ServiceConfiguration.Remove(configuration);
+            await _ctx.SaveChangesAsync();
+        }
+
+        return await GetConfigurationForService(serviceType);
     }
 }
